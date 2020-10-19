@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+		body {
+			background-color: silver;
+		}
+		#slider {
+			width: 60vw;
+			height: 60vh;
+			border: solid 6px #fff;
+			margin: auto;
+			position: relative;
+			overflow: hidden;
+		}
+		#slider > * { position: absolute; }
+		#slide {
+			display: flex;
+			top: 0;
+			left: 0;
+		}
+		#slide>img {
+			height: 100%;
+			outline: solid 3px #fff; 
+		}
+		.fa-chevron-circle-left {
+			left: 0;
+		}
+		.fa-chevron-circle-right {
+			right: 0;
+		}
+		.fas {
+			top: 50%;
+			font-size: 3em;
+		}
+		#down {
+			width: 60vw;
+			height: 25vh;
+			margin: auto;
+			padding-top: 30px;
+			display: flex;
+			justify-content: center;
+			overflow: hidden;
+		}
+		#column {
+			position: relative;
+			width: 85%;
+			height: 100px;
+			overflow: hidden;
+			margin: auto auto;
+		}
+		#down-slide {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			left: 0;
+			top: 0;
+		}
+		#down-slide>img {
+			width: 20%;
+			margin: 10px 2.5%;
+			outline: solid 3px #fff;
+			box-shadow: 0 0 10px black;
+		}
+		.fa-backward {
+			margin: auto auto; 
+		}
+		.fa-forward {
+			margin: auto auto;
+		}
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+	<div id="slider">
+		<div id="slide"></div>
+		<i class="fas fa-chevron-circle-left"></i>
+		<i class="fas fa-chevron-circle-right"></i>
+	</div>
+	<div id="down">
+		<i class="fas fa-backward"></i>
+		<div id="column">
+			<div id="down-slide"></div>
+		</div>	
+		<i class="fas fa-forward"></i>
+	</div>
+	<script>
+		$(document).ready(() => {
+			let images = ["img/image1.jpg", "img/image2.jpg", "img/image3.jpg", "img/image4.jpg", "img/image5.jpg", "img/image6.jpg", "img/image7.jpg", "img/image8.jpg"];
+			let x = 0;
+			let t;
+			let slide = $("#slide");
+			let downSlide = $("#down-slide");
+			let imgL = images.length;
+			slide.append(images.map(item => '<img src="'+ item +'" />'))
+				 .children("img").css({
+					width: $("#slider").width(),
+					height: $("#slider").height(),
+				 })
+			$(".fa-chevron-circle-left, .fa-chevron-circle-right").css({ display: "none"}); 
+			$('#slider').hover(() => {
+				 	$(".fa-chevron-circle-left, .fa-chevron-circle-right").css({ display: "block"})
+				 }, () => {$(".fa-chevron-circle-left, .fa-chevron-circle-right").css({ display: "none"})})
+
+			$(".fa-chevron-circle-left").click(() => {
+				x--;
+				start();
+			})
+			$(".fa-chevron-circle-right").click(() => {
+				x++;
+				start();
+			})
+			downSlide
+				.append(images.map(item => '<img src="'+ item +'" />'))
+				.children("img")
+					.css({
+						height: downSlide.height()-16,
+				 	})
+					.click(function () {
+						let img = $(this).attr("src");
+						x = images.findIndex( item => item.search(img) != -1 );
+				 		start();
+				 	})	 	
+			start();
+			$(".fa-backward").click(() => {
+					if(parseInt(downSlide.css("left")) >= "0") { 
+						 downSlide.animate({ left:-downSlide.width()*(parseInt(imgL/4)-1)}, "slow")
+					} 
+					else downSlide.animate({ left: "+="+downSlide.width()});
+			})
+			$(".fa-forward").click(() => {
+					if(parseInt(downSlide.css("left")) <= parseInt(-downSlide.width()*(parseInt(imgL/4)-1))) {
+						downSlide.animate({ left: "0"});
+					}
+					else { 
+						downSlide.animate({ left: "-="+downSlide.width()});
+					}
+			})
+			function show() {
+				if(x>=imgL) x=0;
+				if(x<0) x=imgL-1;
+				slide.animate({ left:-100*x+"%"}, "slow");
+				if(!(x%4)) downSlide.animate({ left:-downSlide.width()*x/4}, "slow");
+			}
+			function start(){
+				stop();
+				show();
+				t = setInterval(() => {x++; show()},3000)
+			}
+			function stop(){
+				clearInterval(t);
+			}	 
+			
+		})
+	</script>
+	<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</body>
+</html>
